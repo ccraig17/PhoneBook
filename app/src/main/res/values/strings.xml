@@ -1,0 +1,14 @@
+<resources>
+        <string name="app_name">PhoneBook</string>
+        <string name="phone_book">PHONE BOOK</string>
+        <string name="displays_contact">Display Contacts</string>
+        <string name="add_new_contact_fab">Add New Contact FAB</string>
+        <string name="name">Name: </string>
+        <string name="title">Title: </string>
+        <string name="phone_number">Phone Number: </string>
+        <string name="email">Email: </string>
+        <string name="add_contact">Add Contact</string>
+        <string name="save_contact">SAVE</string>
+        <string name="update_contact">Update Contact"</string>
+        <string name="update_button">UPDATE</string>
+</resources>
