@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -43,91 +44,96 @@ public class AddContactActivity extends AppCompatActivity {
         editeTxtTitle = findViewById(R.id.editTxtTitle);
         editTxtPhone = findViewById(R.id.editTxtPhone);
         editTxtEmail = findViewById(R.id.editTxtEmail);
+        imageViewAddImage = findViewById(R.id.imageViewAddImage);
         btnSaveContact = findViewById(R.id.buttonSaveContact);
-        registerForActivity();
+        registerForActivityForSelectedImage();
 
-        imageViewAddImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                imageSelected();
+        imageViewAddImage.setOnClickListener(view -> {
+            imageChooser();
+        });
+        btnSaveContact.setOnClickListener(view -> {
+            String name = editTxtName.getText().toString();
+            String title = editeTxtTitle.getText().toString();
+            String phone = editTxtPhone.getText().toString();
+            String email = editTxtEmail.getText().toString();
+            if(isImageSelected){
+                addContact(name, title, phone, email, selectedImage);
+            }else{
+                addContact(name, title, phone, email, null);
+                Toast.makeText(this, "Please select an image", Toast.LENGTH_SHORT).show();
             }
+            Intent intent = new Intent();
+            intent.putExtra("name", name);
+            intent.putExtra("title", title);
+            intent.putExtra("phone", phone);
+            intent.putExtra("email", email);
+            intent.putExtra("image", selectedImage);
+            setResult(RESULT_OK, intent);
+            startActivity(new Intent(this, ContactListActivity.class));
+            finish();
         });
 
-        btnSaveContact.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String name = editTxtName.getText().toString();
-                String title = editeTxtTitle.getText().toString();
-                String phoneNumber = editTxtPhone.getText().toString();
-                String email = editTxtEmail.getText().toString();
-                addContact(name, title, phoneNumber, email);
-                    Intent intent = new Intent(AddContactActivity.this, ContactListActivity.class);
-                    intent.putExtra("name", name);
-                    intent.putExtra("title", title);
-                    intent.putExtra("phoneNumber", phoneNumber);
-                    intent.putExtra("email", email);
-                    intent.putExtra("image", selectedImage);
-                    startActivity(new Intent(AddContactActivity.this, ContactListActivity.class));
-                    finish();
-            }
-        });
     }
     /*
      * these Methods will be passed to the btnSaveContact when clicked.
      * review how to get Images, converted selected image to Uri image
      * pass Uri selectedImage to Add ContactActivity
      * */
-    private boolean addContact(String name, String title, String phoneNumber, String email) {
-        if (!name.isEmpty() || !title.isEmpty() || !phoneNumber.isEmpty() || !email.isEmpty()) {
-            imageSelected();
-            isImageSelected = true;
-            return true;
-        }else{
-            isImageSelected = false;
+    public ContactModel addContact(String name, String title, String phone, String email, Uri image){
+        if(!name.isEmpty() && !title.isEmpty() && !phone.isEmpty() && !email.isEmpty() && isImageSelected){
+            ContactModel contactModel = new ContactModel(name, title, phone, email, image);
+            return contactModel;
         }
-        return false;
-    }
-
-    private void imageSelected() {
-        Intent intent = new Intent();
-        intent.setType("images/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        activityResultLauncherForSelectedImage.launch(intent);
+        else{
+            Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+            return null;
+        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            Intent intent = new Intent();
-            intent.setType("images/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            intent.setType("image/*");
             activityResultLauncherForSelectedImage.launch(intent);
-        } else {
-            Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
         }
-    };
+    }
 
-    public void registerForActivity(){
+    public void imageChooser() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        activityResultLauncherForSelectedImage.launch(intent);
+    }
+
+    public void registerForActivityForSelectedImage() {
         activityResultLauncherForSelectedImage = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
-            @Override
-            public void onActivityResult(ActivityResult result) {
-                int resultCode = result.getResultCode();
-                Intent data = result.getData();
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        int resultCode = result.getResultCode();
+                        Intent data = result.getData();
+                        if (resultCode == RESULT_OK && data != null) {
+                            selectedImage = data.getData();
+                            imageViewAddImage.setImageURI(selectedImage);
+                            isImageSelected = true;
+                        }//else(resultCode == RESULT_CANCELED) {
+                        //isImageSelected = false;
+                        // Toast.makeText(AddContactActivity.this, "No Image Selected", Toast.LENGTH_SHORT).show();//
+                        // imageViewAddImage.setImageResource(R.drawable.baseline_person_add_24);}
 
-                if(resultCode == RESULT_OK && data != null){
-                    selectedImage = data.getData();
-                    imageViewAddImage.setImageURI(selectedImage);
-                    isImageSelected = true;
-                }else{
-                    isImageSelected =false;
-                    imageViewAddImage.setImageResource(R.drawable.baseline_person_add_24);
-                }
-           }
-        });
+                    }
+                });
     }
 
 
+
 }
+
+
+
+
+
+
+
 

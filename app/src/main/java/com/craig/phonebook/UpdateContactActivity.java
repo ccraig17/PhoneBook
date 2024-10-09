@@ -22,7 +22,7 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class updateContactActivity extends AppCompatActivity {
+public class UpdateContactActivity extends AppCompatActivity {
     MaterialToolbar toolbarAddContact;
     private EditText editTxtUpdateName, editeTxtUpdateTitle, editTxtUpdatePhone, editTxtUpdateEmail;
     private Button btnUpdateContact;
@@ -64,13 +64,13 @@ public class updateContactActivity extends AppCompatActivity {
                 String updateEmail = editTxtUpdateEmail.getText().toString();
                 addContact(updateName, updateTitle, updatePhoneNumber, updateEmail);
                 if (isImageSelected) {
-                    Intent intent = new Intent(updateContactActivity.this, ContactListActivity.class);
+                    Intent intent = new Intent(UpdateContactActivity.this, ContactListActivity.class);
                     intent.putExtra("name", updateName);
                     intent.putExtra("title", updateTitle );
                     intent.putExtra("phoneNumber", updatePhoneNumber);
                     intent.putExtra("email", updateEmail);
                     intent.putExtra("image", isImageSelected);
-                    startActivity(new Intent(updateContactActivity.this, ContactListActivity.class));
+                    startActivity(new Intent(UpdateContactActivity.this, ContactListActivity.class));
                     finish();
                 }
             }

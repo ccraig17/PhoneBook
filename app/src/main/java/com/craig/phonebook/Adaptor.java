@@ -1,7 +1,10 @@
 package com.craig.phonebook;
 
 
+import static androidx.core.content.ContextCompat.startActivity;
+
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,13 +14,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class Adaptor extends RecyclerView.Adapter<Adaptor.ContactCardViewHolder>{
-    private ArrayList<ContactModel> contactModels;
-    private Context context;
+public class Adaptor extends RecyclerView.Adapter<Adaptor.ContactCardViewHolder> {
+    private ArrayList<ContactModel> contactModelList;
+    private final Context context;
 
-    public Adaptor(ArrayList<ContactModel> contactModels, Context context) {
-        this.contactModels = contactModels;
+    public Adaptor(ArrayList<ContactModel> contactModelList, Context context) {
+        this.contactModelList = contactModelList;
         this.context = context;
+    }
+    public void setContactModelsList(ArrayList<ContactModel> contactModelList) {
+        this.contactModelList = contactModelList;
         notifyDataSetChanged();
     }
 
@@ -30,36 +36,42 @@ public class Adaptor extends RecyclerView.Adapter<Adaptor.ContactCardViewHolder>
 
     @Override
     public void onBindViewHolder(@NonNull ContactCardViewHolder holder, int position) {
-        ContactModel contactModel = contactModels.get(position);
+        ContactModel contactModel = contactModelList.get(position);
         holder.txtName.setText(contactModel.getName());
         holder.txtTitle.setText(contactModel.getTitle());
         holder.txtPhoneNumber.setText(contactModel.getPhoneNumber());
         holder.txtEmail.setText(contactModel.getEmail());
-        holder.imageProfile.setImageResource(context.getResources().getIdentifier(contactModel.getImage(position),"drawable",context.getPackageName()));
+        //holder.imageProfile.setImageResource(context.getResources().getIdentifier(contactModel.getImage(position), "drawable", context.getPackageName()));
+        holder.imageProfile.setImageURI(contactModel.getImage());
+        holder.cardView.setOnClickListener(view -> {
+            Intent intent = new Intent(context, UpdateContactActivity.class);
+            context.startActivity(intent);
+        });
     }
 
     @Override
     public int getItemCount() {
-        return contactModels.size();
+        return contactModelList.size();
     }
 
     public static class ContactCardViewHolder extends RecyclerView.ViewHolder {
-
         private TextView txtName;
         private TextView txtTitle;
         private TextView txtPhoneNumber;
         private TextView txtEmail;
-        private CircleImageView imageProfile;;
+        private View cardView;
+        private CircleImageView imageProfile;
 
-    public ContactCardViewHolder(@NonNull View itemView) {
-        super(itemView);
-        txtName = itemView.findViewById(R.id.textViewName);
-        txtTitle = itemView.findViewById(R.id.textViewTitle);
-        txtPhoneNumber = itemView.findViewById(R.id.textViewPhoneNumber);
-        txtEmail = itemView.findViewById(R.id.textViewEmail);
-        imageProfile = itemView.findViewById(R.id.circleImageView);
+        public ContactCardViewHolder(@NonNull View itemView) {
+            super(itemView);
+            txtName = itemView.findViewById(R.id.textViewName);
+            txtTitle = itemView.findViewById(R.id.textViewTitle);
+            txtPhoneNumber = itemView.findViewById(R.id.textViewPhoneNumber);
+            txtEmail = itemView.findViewById(R.id.textViewEmail);
+            imageProfile = itemView.findViewById(R.id.circleImageView);
+            cardView = itemView.findViewById(R.id.cardView);
+        }
     }
-}
 }
 
 
