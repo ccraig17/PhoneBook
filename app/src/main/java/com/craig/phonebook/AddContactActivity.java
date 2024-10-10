@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -56,12 +54,16 @@ public class AddContactActivity extends AppCompatActivity {
             String title = editeTxtTitle.getText().toString();
             String phone = editTxtPhone.getText().toString();
             String email = editTxtEmail.getText().toString();
-            if(isImageSelected){
-                addContact(name, title, phone, email, selectedImage);
-            }else{
-                addContact(name, title, phone, email, null);
-                Toast.makeText(this, "Please select an image", Toast.LENGTH_SHORT).show();
-            }
+//            if(name.isEmpty() || title.isEmpty() || phone.isEmpty() || email.isEmpty()){
+//                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+//            if(isImageSelected){
+//                addContact(name, title, phone, email, String.valueOf(selectedImage));
+//            }else{
+//                addContact(name, title, phone, email, null);
+//                Toast.makeText(this, "Please select an image", Toast.LENGTH_SHORT).show();
+//            }
             Intent intent = new Intent();
             intent.putExtra("name", name);
             intent.putExtra("title", title);
@@ -69,7 +71,9 @@ public class AddContactActivity extends AppCompatActivity {
             intent.putExtra("email", email);
             intent.putExtra("image", selectedImage);
             setResult(RESULT_OK, intent);
+            activityResultLauncherForSelectedImage.launch(intent);
             startActivity(new Intent(this, ContactListActivity.class));
+
             finish();
         });
 
@@ -79,23 +83,24 @@ public class AddContactActivity extends AppCompatActivity {
      * review how to get Images, converted selected image to Uri image
      * pass Uri selectedImage to Add ContactActivity
      * */
-    public ContactModel addContact(String name, String title, String phone, String email, Uri image){
-        if(!name.isEmpty() && !title.isEmpty() && !phone.isEmpty() && !email.isEmpty() && isImageSelected){
-            ContactModel contactModel = new ContactModel(name, title, phone, email, image);
-            return contactModel;
-        }
-        else{
-            Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
-            return null;
-        }
-    }
+//    public ContactModel addContact(String name, String title, String phone, String email, String image){
+//        if(!name.isEmpty() && !title.isEmpty() && !phone.isEmpty() && !email.isEmpty() && image != null){
+//
+//            ContactModel contactModel = new ContactModel(name, title, phone, email, image);
+//            return contactModel;
+//        }
+//        else{
+//            Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+//            return null;
+//        }
+//    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Intent intent = new Intent(Intent.ACTION_PICK);
-            intent.setType("image/*");
+            intent.setType("images/*");
             activityResultLauncherForSelectedImage.launch(intent);
         }
     }
@@ -125,8 +130,6 @@ public class AddContactActivity extends AppCompatActivity {
                     }
                 });
     }
-
-
 
 }
 

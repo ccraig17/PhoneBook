@@ -7,12 +7,12 @@ public class ContactModel {
     private String title;
     private String phoneNumber;
     private String email;
-    private Uri image;
+    private String image;
 
     public ContactModel() {
     }
 
-    public ContactModel(String name, String title, String phoneNumber, String email, Uri image) {
+    public ContactModel(String name, String title, String phoneNumber, String email, String image) {
         this.name = name;
         this.title = title;
         this.phoneNumber = phoneNumber;
@@ -50,15 +50,15 @@ public class ContactModel {
         this.email = email;
     }
 
-   public Uri getImage(int position) {
+   public String getImage(int position) {
         return image;
     }
 
-    public void setImage(Uri image) {
+    public void setImage(String image) {
         this.image = image;
     }
 
-    public Uri getImage() {
+    public String getImage() {
         return image;
     }
 }

@@ -5,6 +5,7 @@ import static androidx.core.content.ContextCompat.startActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +23,9 @@ public class Adaptor extends RecyclerView.Adapter<Adaptor.ContactCardViewHolder>
         this.contactModelList = contactModelList;
         this.context = context;
     }
-    public void setContactModelsList(ArrayList<ContactModel> contactModelList) {
-        this.contactModelList = contactModelList;
-        notifyDataSetChanged();
-    }
+//    public void setContactModelsList(ArrayList<ContactModel> contactModelList) {
+//        this.contactModelList = contactModelList;
+//    }
 
     @NonNull
     @Override
@@ -42,7 +42,7 @@ public class Adaptor extends RecyclerView.Adapter<Adaptor.ContactCardViewHolder>
         holder.txtPhoneNumber.setText(contactModel.getPhoneNumber());
         holder.txtEmail.setText(contactModel.getEmail());
         //holder.imageProfile.setImageResource(context.getResources().getIdentifier(contactModel.getImage(position), "drawable", context.getPackageName()));
-        holder.imageProfile.setImageURI(contactModel.getImage());
+        holder.imageProfile.setImageURI(Uri.parse(contactModel.getImage()));
         holder.cardView.setOnClickListener(view -> {
             Intent intent = new Intent(context, UpdateContactActivity.class);
             context.startActivity(intent);

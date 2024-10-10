@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
 
 public class DatabaseAccess extends SQLiteOpenHelper {
     private static final String NAME = "phonebook.db";
@@ -15,7 +16,7 @@ public class DatabaseAccess extends SQLiteOpenHelper {
     private static final String FIRSTNAME = "firstName";
     private static final String LASTNAME= "lastName";
     private static final String EMAIL= "email";
-    private static final String IMAGE= "image";
+    private static final Uri IMAGE= Uri.parse("image");
     private SQLiteDatabase db;
     public DatabaseAccess(Context context) {
         super(context, NAME, null, VERSION);
@@ -33,13 +34,13 @@ public class DatabaseAccess extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " +TABLE_NAME);
     }
 
-    public boolean insert(String firstName, String lastName, String email, String image){
+    public boolean insert(String firstName, String lastName, String email, String image, Uri uri){
         db = this.getWritableDatabase();
         ContentValues valuesAdded = new ContentValues();
         valuesAdded.put(FIRSTNAME, firstName);
         valuesAdded.put(LASTNAME, lastName);
         valuesAdded.put(EMAIL, email);
-        valuesAdded.put(IMAGE, image);
+        valuesAdded.put(String.valueOf(IMAGE), image);
        long result = db.insert(TABLE_NAME, null, valuesAdded);
         return false;
     }
@@ -50,7 +51,7 @@ public class DatabaseAccess extends SQLiteOpenHelper {
         valuesUpdate.put(FIRSTNAME, firstName);
         valuesUpdate.put(LASTNAME, lastName);
         valuesUpdate.put(EMAIL, email);
-        valuesUpdate.put(IMAGE, image);
+        valuesUpdate.put(String.valueOf(IMAGE), image);
         long result = db.update(TABLE_NAME, valuesUpdate, sqlUpdate, new String[]{firstName});
         return result != -1;
     };

@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,36 +24,24 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<ContactModel> contactList;
     ActivityResultLauncher<Intent> activityResultLauncherForAddImage;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         btnDisplay = findViewById(R.id.buttonDisplay);
-        //register activity for result
-        //registerActivityForAddImage();
+        fabAddContact = findViewById(R.id.fabAddContact);
 
         btnDisplay.setOnClickListener(view -> {
             Intent intent = new Intent(this, ContactListActivity.class);
             startActivity(intent);
         });
-        fabAddContact = findViewById(R.id.fabAddContact);
+
         fabAddContact.setOnClickListener(view -> {
-            startActivity(new Intent(this, AddContactActivity.class));
+             startActivity(new Intent(this, AddContactActivity.class));
+
         });
 
     }
 
-//    public void registerActivityForAddImage() {
-//        activityResultLauncherForAddImage = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-//                result -> {
-//                        Intent intent = new Intent();
-//                        intent.getStringExtra("name");
-//                        intent.getStringExtra("title");
-//                        intent.getStringExtra("phone");
-//                        intent.getStringExtra("email");
-//                        //contactList.add(new ContactModel(intent.getStringExtra("name"), intent.getStringExtra("title"), intent.getStringExtra("phone"), intent.getStringExtra("email")));
-//                        activityResultLauncherForAddImage.launch(intent);
-//
-//                });
-//    }
 }
