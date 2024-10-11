@@ -15,6 +15,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.squareup.picasso.Picasso;
+
 import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -54,26 +56,27 @@ public class AddContactActivity extends AppCompatActivity {
             String title = editeTxtTitle.getText().toString();
             String phone = editTxtPhone.getText().toString();
             String email = editTxtEmail.getText().toString();
-//            if(name.isEmpty() || title.isEmpty() || phone.isEmpty() || email.isEmpty()){
-//                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
-//                return;
-//            }
-//            if(isImageSelected){
-//                addContact(name, title, phone, email, String.valueOf(selectedImage));
-//            }else{
-//                addContact(name, title, phone, email, null);
-//                Toast.makeText(this, "Please select an image", Toast.LENGTH_SHORT).show();
-//            }
+            String image = imageViewAddImage.toString();
+            if(name.isEmpty() || title.isEmpty() || phone.isEmpty() || email.isEmpty()){
+                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if(isImageSelected){
+                addContact(name, title, phone, email, selectedImage);
+            }else{
+                addContact(name, title, phone, email, null);
+                Toast.makeText(this, "Please select an image", Toast.LENGTH_SHORT).show();
+            }
             Intent intent = new Intent();
             intent.putExtra("name", name);
             intent.putExtra("title", title);
             intent.putExtra("phone", phone);
             intent.putExtra("email", email);
             intent.putExtra("image", selectedImage);
-            setResult(RESULT_OK, intent);
+            //setResult(RESULT_OK, intent);
             activityResultLauncherForSelectedImage.launch(intent);
             startActivity(new Intent(this, ContactListActivity.class));
-
+            Toast.makeText(this, "Contact Saved", Toast.LENGTH_SHORT).show();
             finish();
         });
 
@@ -83,17 +86,17 @@ public class AddContactActivity extends AppCompatActivity {
      * review how to get Images, converted selected image to Uri image
      * pass Uri selectedImage to Add ContactActivity
      * */
-//    public ContactModel addContact(String name, String title, String phone, String email, String image){
-//        if(!name.isEmpty() && !title.isEmpty() && !phone.isEmpty() && !email.isEmpty() && image != null){
-//
-//            ContactModel contactModel = new ContactModel(name, title, phone, email, image);
-//            return contactModel;
-//        }
-//        else{
-//            Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
-//            return null;
-//        }
-//    }
+    public ContactModel addContact(String name, String title, String phone, String email, Uri image){
+        if(!name.isEmpty() && !title.isEmpty() && !phone.isEmpty() && !email.isEmpty() && image != null){
+
+            ContactModel contactModel = new ContactModel(name, title, phone, email, image);
+            return contactModel;
+        }
+        else{
+            Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

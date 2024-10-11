@@ -9,15 +9,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class ContactListActivity extends AppCompatActivity {
     MaterialToolbar toolbarContactList;
     RecyclerView contactListRecyclerView;
+    FloatingActionButton fabAddContact;
     Adaptor adaptor;
     ArrayList<ContactModel> contactList = new ArrayList<>();
-    ActivityResultLauncher<Intent> activityResultLauncherForAddImage;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,36 +29,25 @@ public class ContactListActivity extends AppCompatActivity {
         toolbarContactList = findViewById(R.id.toolbarContactList);
         setSupportActionBar(toolbarContactList);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        //register activity for result
-        registerActivityForAddImage();
+        fabAddContact = findViewById(R.id.fabAddContact);
+        fabAddContact.setOnClickListener(view -> {
+            Intent intent = new Intent(this, AddContactActivity.class);
+        });
+
         contactListRecyclerView = findViewById(R.id.contactListRecyclerView);
-        contactListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         adaptor = new Adaptor(contactList, ContactListActivity.this);
         //adaptor.setContactModelsList(contactList);
         contactListRecyclerView.setAdapter(adaptor);
-        
+        contactListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        fabAddContact.setOnClickListener(view -> {
+            Intent intent = new Intent(this, AddContactActivity.class);
+            startActivity(intent);
+        });
+
 
     }
 
-
-    public void registerActivityForAddImage() {
-        activityResultLauncherForAddImage = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    int resultCode = result.getResultCode();
-                    Intent data = result.getData();
-                    if (resultCode == RESULT_OK && data != null) {
-                        String name = data.getStringExtra("name");
-                        String title = data.getStringExtra("title");
-                        String phone = data.getStringExtra("phone");
-                        String email = data.getStringExtra("email");
-                        String image = data.getStringExtra("image");
-                        contactList.add(new ContactModel(name, title, phone, email, image));
-                        // adaptor.setContactModelsList(contactList);
-
-                    }
-
-                });
-    }
 //public ArrayList<ContactModel> contactToAdd(ArrayList<ContactModel> contactModels, String name, String title, String phone, String email, String image){
 //        ArrayList<ContactModel> contactModelList = new ArrayList<>();
 //        contactModelList.add(new ContactModel(name, title, phone, email, image));

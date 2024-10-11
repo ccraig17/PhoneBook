@@ -12,7 +12,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
+
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class Adaptor extends RecyclerView.Adapter<Adaptor.ContactCardViewHolder> {
@@ -41,8 +46,9 @@ public class Adaptor extends RecyclerView.Adapter<Adaptor.ContactCardViewHolder>
         holder.txtTitle.setText(contactModel.getTitle());
         holder.txtPhoneNumber.setText(contactModel.getPhoneNumber());
         holder.txtEmail.setText(contactModel.getEmail());
-        //holder.imageProfile.setImageResource(context.getResources().getIdentifier(contactModel.getImage(position), "drawable", context.getPackageName()));
-        holder.imageProfile.setImageURI(Uri.parse(contactModel.getImage()));
+        //holder.imageProfile.setImageResource(context.getResources().getIdentifier(contactModel.getImage(position), "drawable", context.getPackageName())); //used for static model
+        holder.imageProfile.setImageURI((contactModel.getImage()));
+        Picasso.get().load(contactModel.getImage()).into(holder.imageProfile);
         holder.cardView.setOnClickListener(view -> {
             Intent intent = new Intent(context, UpdateContactActivity.class);
             context.startActivity(intent);
