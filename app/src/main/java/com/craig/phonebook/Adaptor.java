@@ -47,7 +47,7 @@ public class Adaptor extends RecyclerView.Adapter<Adaptor.ContactCardViewHolder>
         holder.txtPhoneNumber.setText(contactModel.getPhoneNumber());
         holder.txtEmail.setText(contactModel.getEmail());
         //holder.imageProfile.setImageResource(context.getResources().getIdentifier(contactModel.getImage(position), "drawable", context.getPackageName())); //used for static model
-        holder.imageProfile.setImageURI((contactModel.getImage()));
+        holder.imageProfile.setImageURI(contactModel.getImage());
         Picasso.get().load(contactModel.getImage()).into(holder.imageProfile);
         holder.cardView.setOnClickListener(view -> {
             Intent intent = new Intent(context, UpdateContactActivity.class);

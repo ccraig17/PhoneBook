@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -27,6 +28,7 @@ public class AddContactActivity extends AppCompatActivity {
     CircleImageView imageViewAddImage;
     boolean isImageSelected = false;
     private Uri selectedImage;
+    private ArrayList<ContactModel> contactList = new ArrayList<>();
     private ActivityResultLauncher<Intent> activityResultLauncherForSelectedImage;
 
     @Override
@@ -56,46 +58,48 @@ public class AddContactActivity extends AppCompatActivity {
             String title = editeTxtTitle.getText().toString();
             String phone = editTxtPhone.getText().toString();
             String email = editTxtEmail.getText().toString();
-            String image = imageViewAddImage.toString();
-            if(name.isEmpty() || title.isEmpty() || phone.isEmpty() || email.isEmpty()){
+            Uri imageUri = Uri.parse(selectedImage.toString());
+            if (name.isEmpty() || title.isEmpty() || phone.isEmpty() || email.isEmpty()) {
                 Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if(isImageSelected){
-                addContact(name, title, phone, email, selectedImage);
-            }else{
+            if (isImageSelected) {
+                Intent intent = new Intent();
+                intent.putExtra("name", name);
+                intent.putExtra("title", title);
+                intent.putExtra("phone", phone);
+                intent.putExtra("email", email);
+                intent.putExtra("image", imageUri.toString());
+               contactList.add(new ContactModel(name, title, phone, email, imageUri));
+                activityResultLauncherForSelectedImage.launch(intent);
+                startActivity(new Intent(this, ContactListActivity.class));
+                Toast.makeText(this, "Contact Saved", Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
                 addContact(name, title, phone, email, null);
-                Toast.makeText(this, "Please select an image", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "No image selected, please select an image", Toast.LENGTH_SHORT).show();
             }
-            Intent intent = new Intent();
-            intent.putExtra("name", name);
-            intent.putExtra("title", title);
-            intent.putExtra("phone", phone);
-            intent.putExtra("email", email);
-            intent.putExtra("image", selectedImage);
-            //setResult(RESULT_OK, intent);
-            activityResultLauncherForSelectedImage.launch(intent);
-            startActivity(new Intent(this, ContactListActivity.class));
-            Toast.makeText(this, "Contact Saved", Toast.LENGTH_SHORT).show();
-            finish();
         });
 
     }
+
     /*
      * these Methods will be passed to the btnSaveContact when clicked.
      * review how to get Images, converted selected image to Uri image
      * pass Uri selectedImage to Add ContactActivity
      * */
-    public ContactModel addContact(String name, String title, String phone, String email, Uri image){
-        if(!name.isEmpty() && !title.isEmpty() && !phone.isEmpty() && !email.isEmpty() && image != null){
-
-            ContactModel contactModel = new ContactModel(name, title, phone, email, image);
-            return contactModel;
-        }
-        else{
+    public ContactModel addContact(String name, String title, String phone, String email, Uri image) {
+        if (!name.isEmpty() && !title.isEmpty() && !phone.isEmpty() && !email.isEmpty() && image != null) {
+            return new ContactModel(name, title, phone, email, image);
+        } else {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
             return null;
         }
+    }
+    public void imageChooser() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        activityResultLauncherForSelectedImage.launch(intent);
     }
 
     @Override
@@ -108,12 +112,6 @@ public class AddContactActivity extends AppCompatActivity {
         }
     }
 
-    public void imageChooser() {
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");
-        activityResultLauncherForSelectedImage.launch(intent);
-    }
-
     public void registerForActivityForSelectedImage() {
         activityResultLauncherForSelectedImage = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -122,19 +120,29 @@ public class AddContactActivity extends AppCompatActivity {
                         int resultCode = result.getResultCode();
                         Intent data = result.getData();
                         if (resultCode == RESULT_OK && data != null) {
-                            selectedImage = data.getData();
+                            String name = data.getStringExtra("name");
+                            String title = data.getStringExtra("title");
+                            String phone = data.getStringExtra("phone");
+                            String email = data.getStringExtra("email");
+                            Uri selectedImage = Uri.parse(data.getStringExtra("image"));
+                            Picasso.get().load(selectedImage).into(imageViewAddImage);
                             imageViewAddImage.setImageURI(selectedImage);
+                            contactList.add(new ContactModel(name, title, phone, email, selectedImage));
                             isImageSelected = true;
-                        }//else(resultCode == RESULT_CANCELED) {
-                        //isImageSelected = false;
-                        // Toast.makeText(AddContactActivity.this, "No Image Selected", Toast.LENGTH_SHORT).show();//
-                        // imageViewAddImage.setImageResource(R.drawable.baseline_person_add_24);}
-
+                        } else {
+                            isImageSelected = false;
+                            Toast.makeText(AddContactActivity.this, "No Image Selected", Toast.LENGTH_SHORT).show();
+                            imageViewAddImage.setImageResource(R.drawable.baseline_person_add_24);
+                        }
                     }
+
+
                 });
     }
-
 }
+
+
+
 
 
 
