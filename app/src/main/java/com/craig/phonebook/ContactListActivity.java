@@ -20,10 +20,12 @@ import java.util.Objects;
 public class ContactListActivity extends AppCompatActivity {
     MaterialToolbar toolbarContactList;
     RecyclerView contactListRecyclerView;
-    FloatingActionButton fabAddContact;
-    Adaptor adaptor;
-    ArrayList<ContactModel> contactList = new ArrayList<>();
+    private FloatingActionButton fabAddContact;
+    private Adaptor adaptor;
+    private ArrayList<ContactModel> contactList = new ArrayList<>();
     private ActivityResultLauncher<Intent> activityResultLauncherForAddNewContact;
+    private ContactModel contactModel = new ContactModel();
+    private DatabaseAccess databaseAccess = new DatabaseAccess(this);
 
 
     @Override
@@ -35,7 +37,7 @@ public class ContactListActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         fabAddContact = findViewById(R.id.fabAddContact);
-        registrationForAddNewContactResult();
+        registrationForAddContactResult();
 
         contactListRecyclerView = findViewById(R.id.contactListRecyclerView);
 
@@ -46,8 +48,8 @@ public class ContactListActivity extends AppCompatActivity {
         contactListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         fabAddContact.setOnClickListener(view -> {
-            Intent intentOpenAddContact = new Intent(this, AddContactActivity.class);
-        startActivity(intentOpenAddContact);
+            Intent intent = new Intent(this, AddContactActivity.class);
+            activityResultLauncherForAddNewContact.launch(intent);
         });
 
 
@@ -59,30 +61,24 @@ public class ContactListActivity extends AppCompatActivity {
 
     }
 
-    public void registrationForAddNewContactResult() {
+    public void registrationForAddContactResult() {
         activityResultLauncherForAddNewContact = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    Intent intent = result.getData();
+                //check if the user is sending the data.
                     int resultCode = result.getResultCode();
-                    if (resultCode == RESULT_OK && intent != null) {
-                        String name = intent.getStringExtra("name");
-                        String title = intent.getStringExtra("title");
-                        String phone = intent.getStringExtra("phone");
-                        String email = intent.getStringExtra("email");
-                        String selectedImage = intent.getStringExtra("image");
-                        if (selectedImage != null) {
-                            Uri image = Uri.parse(selectedImage);
-                            contactList.add(new ContactModel(name, title, phone, email, image));
-                            adaptor.notifyDataSetChanged();
-                        }else{
-                            contactList.add(new ContactModel(name, title, phone, email, null));
-                            adaptor.notifyDataSetChanged();
-                            Toast.makeText(this, "No image selected", Toast.LENGTH_SHORT).show();
-                        }
-                    }else if (resultCode == RESULT_CANCELED) {
-                        Toast.makeText(this, "Image selection canceled", Toast.LENGTH_SHORT).show();
+                    Intent data = result.getData();
+                    if(resultCode == RESULT_OK && data != null){ //means the user had sent data from the AddContactActivity.
+                        //transfer incoming data from the AddContactActivity to the ContactListActivity using keyword and object
+                        String name = data.getStringExtra("name");
+                        String title = data.getStringExtra("title");
+                        String phone = data.getStringExtra("phone");
+                        String email = data.getStringExtra("email");
+                        byte[] image = data.getByteArrayExtra("image");
+                        contactList.add(new ContactModel(name, title, phone, email, image));
+                        adaptor.notifyDataSetChanged();
+                    //SAVE DATA TO DATABASE HERE  databaseAccess.insert(name, title, phone, email, image);
+                        Toast.makeText(this, "Contact Added", Toast.LENGTH_SHORT).show();
                     }
-
 
 
                 });

@@ -5,7 +5,7 @@ import static androidx.core.content.ContextCompat.startActivity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -46,9 +47,11 @@ public class Adaptor extends RecyclerView.Adapter<Adaptor.ContactCardViewHolder>
         holder.txtTitle.setText(contactModel.getTitle());
         holder.txtPhoneNumber.setText(contactModel.getPhoneNumber());
         holder.txtEmail.setText(contactModel.getEmail());
+        holder.imageProfile.setImageBitmap(BitmapFactory.decodeByteArray(contactModel.getImage(),
+                0,
+                contactModel.getImage().length));
         //holder.imageProfile.setImageResource(context.getResources().getIdentifier(contactModel.getImage(position), "drawable", context.getPackageName())); //used for static model
-        holder.imageProfile.setImageURI(contactModel.getImage());
-        Picasso.get().load(contactModel.getImage()).into(holder.imageProfile);
+        Picasso.get().load(Arrays.toString(contactModel.getImage())).into(holder.imageProfile);
         holder.cardView.setOnClickListener(view -> {
             Intent intent = new Intent(context, UpdateContactActivity.class);
             context.startActivity(intent);

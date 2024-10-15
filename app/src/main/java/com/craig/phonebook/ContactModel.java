@@ -7,12 +7,17 @@ public class ContactModel {
     private String title;
     private String phoneNumber;
     private String email;
-    private Uri image;
+    private byte[] image;
 
     public ContactModel() {
     }
-
-    public ContactModel(String name, String title, String phoneNumber, String email, Uri image) {
+    public ContactModel(String name, String title, String phoneNumber, String email) {
+        this.name = name;
+        this.title = title;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+    }
+    public ContactModel(String name, String title, String phoneNumber, String email, byte[] image) {
         this.name = name;
         this.title = title;
         this.phoneNumber = phoneNumber;
@@ -27,6 +32,7 @@ public class ContactModel {
     public void setName(String name) {
         this.name = name;
     }
+
     public String getTitle() {
         return title;
     }
@@ -34,6 +40,7 @@ public class ContactModel {
     public void setTitle(String title) {
         this.title = title;
     }
+
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -50,15 +57,15 @@ public class ContactModel {
         this.email = email;
     }
 
-   public Uri getImage(int position) {
+    public byte[] getImage() {
         return image;
     }
 
-    public void setImage(Uri image) {
+    public void setImage(byte[] image) {
         this.image = image;
     }
 
-    public Uri getImage() {
-        return image;
-    }
+
+
+
 }

@@ -43,21 +43,21 @@ public class MainActivity extends AppCompatActivity {
     public void registerActivityForAddImage() {
         activityResultLauncherForAddImage = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    int resultCode = result.getResultCode();
-                    Intent data = result.getData();
-                    if (resultCode == RESULT_OK && data != null) {
-                        String name = data.getStringExtra("name");
-                        String title = data.getStringExtra("title");
-                        String phone = data.getStringExtra("phone");
-                        String email = data.getStringExtra("email");
-                        String image = data.getStringExtra("image");
-                        Uri selectedImage = Uri.parse(image);
-                        assert selectedImage != null;
-                        contactList.add(new ContactModel(name, title, phone, email, selectedImage));
-                        //contactList.add(new ContactModel(name, title, phone, email, image));
-                        adaptor.notifyDataSetChanged();
-
-                    }
+//                    int resultCode = result.getResultCode();
+//                    Intent data = result.getData();
+//                    if (resultCode == RESULT_OK && data != null) {
+//                        String name = data.getStringExtra("name");
+//                        String title = data.getStringExtra("title");
+//                        String phone = data.getStringExtra("phone");
+//                        String email = data.getStringExtra("email");
+//                        String image = data.getStringExtra("image");
+//                        Uri selectedImage = Uri.parse(image);
+//                        assert selectedImage != null;
+//                        contactList.add(new ContactModel(name, title, phone, email, selectedImage));
+//                        //contactList.add(new ContactModel(name, title, phone, email, image));
+//                        adaptor.notifyDataSetChanged();
+//
+//                    }
 
                 });
     }
