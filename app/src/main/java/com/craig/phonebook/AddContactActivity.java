@@ -19,6 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.squareup.picasso.Picasso;
@@ -37,6 +38,7 @@ public class AddContactActivity extends AppCompatActivity {
     CircleImageView imageViewAddImage;
     boolean isImageSelected = false;
     private Bitmap selectedImage;
+    //private Uri selectedImage;
     private Bitmap scaledImage;
     private ActivityResultLauncher<Intent> activityResultLauncherForSelectedImage;
 
@@ -48,7 +50,7 @@ public class AddContactActivity extends AppCompatActivity {
         toolbarAddContact.setNavigationOnClickListener(view -> {
             if (Objects.equals(toolbarAddContact.getTitle(), "Add Contact")) {
                 startActivity(new Intent(this, ContactListActivity.class));
-                finish();
+               // finish();
             }
         });
         editTxtName = findViewById(R.id.editTxtName);
@@ -60,15 +62,15 @@ public class AddContactActivity extends AppCompatActivity {
         registerForActivityForSelectedImage();
 
         imageViewAddImage.setOnClickListener(view -> {
+
             String permission;
             if(Build.VERSION.SDK_INT >= 33){
                 permission = Manifest.permission.READ_MEDIA_IMAGES;
             }else{
                 permission = Manifest.permission.READ_EXTERNAL_STORAGE;
             }
-            if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{permission}, 1);
-               // requestPermissions(new String[]{permission}, 1);
+            if (ContextCompat.checkSelfPermission(AddContactActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(AddContactActivity.this, new String[]{permission}, 1);
             } else {
                 Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 activityResultLauncherForSelectedImage.launch(intent);
@@ -87,17 +89,16 @@ public class AddContactActivity extends AppCompatActivity {
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 scaledImage = makeSmall(selectedImage, 100);
                 selectedImage.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-                byte[] image = outputStream.toByteArray();
+                byte[] scaledImage = outputStream.toByteArray();
 
                 Intent intent = new Intent();
                 intent.putExtra("name", name);
                 intent.putExtra("title", title);
                 intent.putExtra("phone", phone);
                 intent.putExtra("email", email);
-                intent.putExtra("image", image);
+                intent.putExtra("image", scaledImage);
                 setResult(RESULT_OK, intent);
                 finish();
-
 
             }
 
@@ -106,14 +107,7 @@ public class AddContactActivity extends AppCompatActivity {
     }
 
 
-    public ContactModel addContact(String name, String title, String phone, String email) {
-        if (!name.isEmpty() && !title.isEmpty() && !phone.isEmpty() && !email.isEmpty()) {
-            return new ContactModel(name, title, phone, email);
-        } else {
-            Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
-            return null;
-        }
-    }
+
 //    public void imageChooser() {
 //        Intent intent = new Intent(Intent.ACTION_PICK);
 //        intent.setType("image/*");
@@ -143,7 +137,7 @@ public class AddContactActivity extends AppCompatActivity {
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }
-                            Picasso.get().load(selectedImage.toString()).into(imageViewAddImage);
+                            //Picasso.get().load(selectedImage.toString()).into(imageViewAddImage);
                             isImageSelected = true;
                         } else {
                             isImageSelected = false;

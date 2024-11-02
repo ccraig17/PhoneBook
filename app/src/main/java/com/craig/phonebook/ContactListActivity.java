@@ -23,7 +23,7 @@ public class ContactListActivity extends AppCompatActivity {
     private FloatingActionButton fabAddContact;
     private Adaptor adaptor;
     private ArrayList<ContactModel> contactList = new ArrayList<>();
-    private ActivityResultLauncher<Intent> activityResultLauncherForAddNewContact;
+    private ActivityResultLauncher<Intent> activityResultLauncherForAddContactImage;
     private ContactModel contactModel = new ContactModel();
     private DatabaseAccess databaseAccess = new DatabaseAccess(this);
 
@@ -49,22 +49,26 @@ public class ContactListActivity extends AppCompatActivity {
 
         fabAddContact.setOnClickListener(view -> {
             Intent intent = new Intent(this, AddContactActivity.class);
-            activityResultLauncherForAddNewContact.launch(intent);
+            activityResultLauncherForAddContactImage.launch(intent);
         });
 
 
     }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
+    public ContactModel addContact(String name, String title, String phone, String email) {
+        if (!name.isEmpty() && !title.isEmpty() && !phone.isEmpty() && !email.isEmpty()) {
+            return new ContactModel(name, title, phone, email);
+        } else {
+            Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+            return null;
+        }
     }
 
+
+
     public void registrationForAddContactResult() {
-        activityResultLauncherForAddNewContact = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+        activityResultLauncherForAddContactImage = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                //check if the user is sending the data.
+
                     int resultCode = result.getResultCode();
                     Intent data = result.getData();
                     if(resultCode == RESULT_OK && data != null){ //means the user had sent data from the AddContactActivity.
@@ -74,7 +78,8 @@ public class ContactListActivity extends AppCompatActivity {
                         String phone = data.getStringExtra("phone");
                         String email = data.getStringExtra("email");
                         byte[] image = data.getByteArrayExtra("image");
-                        contactList.add(new ContactModel(name, title, phone, email, image));
+                        //Uri image = Uri.parse(data.getStringExtra("image"));
+                        contactList.add(new ContactModel(name, title, phone, email,image));
                         adaptor.notifyDataSetChanged();
                     //SAVE DATA TO DATABASE HERE  databaseAccess.insert(name, title, phone, email, image);
                         Toast.makeText(this, "Contact Added", Toast.LENGTH_SHORT).show();
@@ -82,6 +87,7 @@ public class ContactListActivity extends AppCompatActivity {
 
 
                 });
+
     }
 
 

@@ -31,35 +31,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         adaptor = new Adaptor(contactList, this);
         btnDisplay = findViewById(R.id.buttonDisplay);
-        //register activity for result
-        registerActivityForAddImage();
         btnDisplay.setOnClickListener(view -> {
             Intent intent = new Intent(this, ContactListActivity.class);
-            activityResultLauncherForAddImage.launch(intent);
+            startActivity(intent);
         });
 
 
     }
-    public void registerActivityForAddImage() {
-        activityResultLauncherForAddImage = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-//                    int resultCode = result.getResultCode();
-//                    Intent data = result.getData();
-//                    if (resultCode == RESULT_OK && data != null) {
-//                        String name = data.getStringExtra("name");
-//                        String title = data.getStringExtra("title");
-//                        String phone = data.getStringExtra("phone");
-//                        String email = data.getStringExtra("email");
-//                        String image = data.getStringExtra("image");
-//                        Uri selectedImage = Uri.parse(image);
-//                        assert selectedImage != null;
-//                        contactList.add(new ContactModel(name, title, phone, email, selectedImage));
-//                        //contactList.add(new ContactModel(name, title, phone, email, image));
-//                        adaptor.notifyDataSetChanged();
-//
-//                    }
 
-                });
-    }
 
 }
