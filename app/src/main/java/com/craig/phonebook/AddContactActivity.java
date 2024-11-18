@@ -87,7 +87,7 @@ public class AddContactActivity extends AppCompatActivity {
                 String phone = editTxtPhone.getText().toString();
                 String email = editTxtEmail.getText().toString();
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                scaledImage = makeSmall(selectedImage, 100);
+                scaledImage = makeSmall(selectedImage, 50);
                 selectedImage.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
                 byte[] scaledImage = outputStream.toByteArray();
 
@@ -99,7 +99,6 @@ public class AddContactActivity extends AppCompatActivity {
                 intent.putExtra("image", scaledImage);
                 setResult(RESULT_OK, intent);
                 finish();
-
             }
 
         });
@@ -134,18 +133,16 @@ public class AddContactActivity extends AppCompatActivity {
                             try {
                                 selectedImage = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
                                 imageViewAddImage.setImageBitmap(selectedImage);
+                                isImageSelected = true;
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }
-                            //Picasso.get().load(selectedImage.toString()).into(imageViewAddImage);
-                            isImageSelected = true;
                         } else {
                             isImageSelected = false;
                             Toast.makeText(AddContactActivity.this, "No Image Selected", Toast.LENGTH_SHORT).show();
                             imageViewAddImage.setImageResource(R.drawable.baseline_person_add_24);
                         }
                     }
-
 
                 });
     }
