@@ -1,8 +1,6 @@
 package com.craig.phonebook;
 
 
-import static androidx.core.content.ContextCompat.startActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
@@ -13,6 +11,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.craig.phonebook.Activities.UpdateContactActivity;
+import com.craig.phonebook.Model.ContactModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

@@ -1,16 +1,19 @@
-package com.craig.phonebook;
+package com.craig.phonebook.Activities;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.craig.phonebook.Adaptor;
+import com.craig.phonebook.Model.ContactModel;
+import com.craig.phonebook.DatabaseAccess;
+import com.craig.phonebook.R;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -49,15 +52,8 @@ public class ContactListActivity extends AppCompatActivity {
 
         fabAddContact.setOnClickListener(view -> {
             Intent intent = new Intent(this, AddContactActivity.class);
-            activityResultLauncherForAddNewContact.launch(intent);
+            startActivity(intent);
         });
-
-
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
     }
 
@@ -79,7 +75,6 @@ public class ContactListActivity extends AppCompatActivity {
                     //SAVE DATA TO DATABASE HERE  databaseAccess.insert(name, title, phone, email, image);
                         Toast.makeText(this, "Contact Added", Toast.LENGTH_SHORT).show();
                     }
-
 
                 });
     }

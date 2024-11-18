@@ -16,15 +16,15 @@
         android:theme="@style/Theme.PhoneBook"
         tools:targetApi="31">
         <activity
-            android:name=".AddContactActivity"
+            android:name=".Activities.AddContactActivity"
             android:exported="false"/>
         <activity
-            android:name=".ContactListActivity"
+            android:name=".Activities.ContactListActivity"
             android:exported="false"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".Activities.MainActivity"/>
 
         <activity
-            android:name=".MainActivity"
+            android:name=".Activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,4 +1,4 @@
-package com.craig.phonebook;
+package com.craig.phonebook.Activities;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -16,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.craig.phonebook.R;
 import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.Objects;

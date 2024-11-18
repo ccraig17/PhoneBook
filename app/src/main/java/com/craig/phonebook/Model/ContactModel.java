@@ -1,6 +1,4 @@
-package com.craig.phonebook;
-
-import android.net.Uri;
+package com.craig.phonebook.Model;
 
 public class ContactModel {
     private String name;
