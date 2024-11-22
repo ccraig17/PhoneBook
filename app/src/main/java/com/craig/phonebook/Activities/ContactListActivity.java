@@ -1,6 +1,8 @@
 package com.craig.phonebook.Activities;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -27,8 +29,7 @@ public class ContactListActivity extends AppCompatActivity {
     private Adaptor adaptor;
     private ArrayList<ContactModel> contactList = new ArrayList<>();
     private ActivityResultLauncher<Intent> activityResultLauncherForAddNewContact;
-    private ContactModel contactModel = new ContactModel();
-    private DatabaseAccess databaseAccess = new DatabaseAccess(this);
+    private final DatabaseAccess databaseAccess = new DatabaseAccess(this);
 
 
     @Override
@@ -44,15 +45,13 @@ public class ContactListActivity extends AppCompatActivity {
 
         contactListRecyclerView = findViewById(R.id.contactListRecyclerView);
 
-        adaptor = new Adaptor(contactList, ContactListActivity.this);
-
-        //adaptor.setContactModelsList(contactList);
-        contactListRecyclerView.setAdapter(adaptor);
         contactListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adaptor = new Adaptor(contactList, ContactListActivity.this);
+        contactListRecyclerView.setAdapter(adaptor);
 
         fabAddContact.setOnClickListener(view -> {
             Intent intent = new Intent(this, AddContactActivity.class);
-            startActivity(intent);
+            activityResultLauncherForAddNewContact.launch(intent);
         });
 
     }
@@ -71,6 +70,7 @@ public class ContactListActivity extends AppCompatActivity {
                         String email = data.getStringExtra("email");
                         byte[] image = data.getByteArrayExtra("image");
                         contactList.add(new ContactModel(name, title, phone, email, image));
+                        databaseAccess.insert(name,title,email,image);
                         adaptor.notifyDataSetChanged();
                     //SAVE DATA TO DATABASE HERE  databaseAccess.insert(name, title, phone, email, image);
                         Toast.makeText(this, "Contact Added", Toast.LENGTH_SHORT).show();

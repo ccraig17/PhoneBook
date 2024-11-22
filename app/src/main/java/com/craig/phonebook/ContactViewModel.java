@@ -1,16 +1,23 @@
 package com.craig.phonebook;
 
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
-
 import com.craig.phonebook.Model.ContactModel;
 
 import java.util.List;
 
-public class ContactViewModel extends ViewModel {
-    private MutableLiveData<List<ContactModel>> mContacts = new MutableLiveData<>();
+public class ContactViewModel extends AndroidViewModel {
+    private final MutableLiveData<List<ContactModel>> contactsList = new MutableLiveData<>();
+
+    public ContactViewModel(@NonNull Application application) {
+        super(application);
+    }
+
     public LiveData<List<ContactModel>> getContacts() {
-        return mContacts;
+        return contactsList;
     }
 }

@@ -26,18 +26,20 @@ import com.craig.phonebook.R;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AddContactActivity extends AppCompatActivity {
-    MaterialToolbar toolbarAddContact;
+    private MaterialToolbar toolbarAddContact;
     private EditText editTxtName, editeTxtTitle, editTxtPhone, editTxtEmail;
     private Button btnSaveContact;
     private FloatingActionButton btnCamera;
-    CircleImageView imageViewAddImage;
+    private CircleImageView imageViewAddImage;
     boolean isImageSelected = false;
     private Bitmap selectedImage;
+    private Bitmap scaledImage;
     private ActivityResultLauncher<Intent> activityResultLauncherForSelectedImage;
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
@@ -78,7 +80,11 @@ public class AddContactActivity extends AppCompatActivity {
                 String title = editeTxtTitle.getText().toString();
                 String phone = editTxtPhone.getText().toString();
                 String email = editTxtEmail.getText().toString();
-                String image = selectedImage.toString();
+
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                scaledImage = makeSmall(selectedImage, 300); //scaled the selected image to be passed to  the ContactList
+                scaledImage.compress(Bitmap.CompressFormat.PNG,50, outputStream);
+                byte[] image = outputStream.toByteArray();
 
                 Intent intent = new Intent();
                 intent.putExtra("name", name);
@@ -88,9 +94,7 @@ public class AddContactActivity extends AppCompatActivity {
                 intent.putExtra("image", image);
                 setResult(RESULT_OK, intent);
                 finish();
-
             }
-
         });
 
     }
@@ -152,6 +156,20 @@ public class AddContactActivity extends AppCompatActivity {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
             return null;
         }
+    }
+    public Bitmap makeSmall(Bitmap image, int maxSize){
+        int width = image.getWidth();
+        int height = image.getHeight();
+        float ratio = (float) width /height;
+
+        if(ratio >1){
+            width = maxSize;
+            height = (int) (width/ratio);
+        }else{
+            height = maxSize;
+            width = (int) (height * ratio);
+        }
+        return Bitmap.createScaledBitmap(image,width,height,true);
     }
 
 

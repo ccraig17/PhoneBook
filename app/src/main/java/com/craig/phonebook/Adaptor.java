@@ -10,15 +10,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.craig.phonebook.Activities.UpdateContactActivity;
 import com.craig.phonebook.Model.ContactModel;
-import com.squareup.picasso.Picasso;
-
 import java.util.ArrayList;
-import java.util.Arrays;
-
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class Adaptor extends RecyclerView.Adapter<Adaptor.ContactCardViewHolder> {
@@ -28,10 +22,8 @@ public class Adaptor extends RecyclerView.Adapter<Adaptor.ContactCardViewHolder>
     public Adaptor(ArrayList<ContactModel> contactModelList, Context context) {
         this.contactModelList = contactModelList;
         this.context = context;
+        notifyDataSetChanged();
     }
-//    public void setContactModelsList(ArrayList<ContactModel> contactModelList) {
-//        this.contactModelList = contactModelList;
-//    }
 
     @NonNull
     @Override
@@ -47,11 +39,9 @@ public class Adaptor extends RecyclerView.Adapter<Adaptor.ContactCardViewHolder>
         holder.txtTitle.setText(contactModel.getTitle());
         holder.txtPhoneNumber.setText(contactModel.getPhoneNumber());
         holder.txtEmail.setText(contactModel.getEmail());
-        holder.imageProfile.setImageBitmap(BitmapFactory.decodeByteArray(contactModel.getImage(),
-                0,
-                contactModel.getImage().length));
-        //holder.imageProfile.setImageResource(context.getResources().getIdentifier(contactModel.getImage(position), "drawable", context.getPackageName())); //used for static model
-        Picasso.get().load(Arrays.toString(contactModel.getImage())).into(holder.imageProfile);
+       holder.imageProfile.setImageBitmap(BitmapFactory.decodeByteArray(contactModel.getImage(),
+                0, contactModel.getImage().length));
+        //holder.imageProfile.setImageResource(context.getResources().getIdentifier(contactModel.getImage(position), "drawable", context.getPackageName())); //used for static model; picasso library can be used here.
         holder.cardView.setOnClickListener(view -> {
             Intent intent = new Intent(context, UpdateContactActivity.class);
             context.startActivity(intent);
