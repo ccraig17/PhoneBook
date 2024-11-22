@@ -1,24 +1,19 @@
 package com.craig.phonebook.Activities;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.craig.phonebook.Adaptor;
 import com.craig.phonebook.Model.ContactModel;
 import com.craig.phonebook.DatabaseAccess;
 import com.craig.phonebook.R;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -27,7 +22,7 @@ public class ContactListActivity extends AppCompatActivity {
     RecyclerView contactListRecyclerView;
     private FloatingActionButton fabAddContact;
     private Adaptor adaptor;
-    private ArrayList<ContactModel> contactList = new ArrayList<>();
+    private final ArrayList<ContactModel> contactList = new ArrayList<>();
     private ActivityResultLauncher<Intent> activityResultLauncherForAddNewContact;
     private final DatabaseAccess databaseAccess = new DatabaseAccess(this);
 
@@ -71,7 +66,7 @@ public class ContactListActivity extends AppCompatActivity {
                         byte[] image = data.getByteArrayExtra("image");
                         contactList.add(new ContactModel(name, title, phone, email, image));
                         databaseAccess.insert(name,title,email,image);
-                        adaptor.notifyDataSetChanged();
+
                     //SAVE DATA TO DATABASE HERE  databaseAccess.insert(name, title, phone, email, image);
                         Toast.makeText(this, "Contact Added", Toast.LENGTH_SHORT).show();
                     }

@@ -22,7 +22,6 @@ public class Adaptor extends RecyclerView.Adapter<Adaptor.ContactCardViewHolder>
     public Adaptor(ArrayList<ContactModel> contactModelList, Context context) {
         this.contactModelList = contactModelList;
         this.context = context;
-        notifyDataSetChanged();
     }
 
     @NonNull
