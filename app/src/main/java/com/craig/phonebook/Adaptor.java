@@ -12,16 +12,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.craig.phonebook.Activities.UpdateContactActivity;
 import com.craig.phonebook.Model.ContactModel;
+
 import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class Adaptor extends RecyclerView.Adapter<Adaptor.ContactCardViewHolder> {
-    private ArrayList<ContactModel> contactModelList;
+    private final ArrayList<ContactModel> contactModelList;
     private final Context context;
 
     public Adaptor(ArrayList<ContactModel> contactModelList, Context context) {
         this.contactModelList = contactModelList;
         this.context = context;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -38,15 +40,14 @@ public class Adaptor extends RecyclerView.Adapter<Adaptor.ContactCardViewHolder>
         holder.txtTitle.setText(contactModel.getTitle());
         holder.txtPhoneNumber.setText(contactModel.getPhoneNumber());
         holder.txtEmail.setText(contactModel.getEmail());
-       holder.imageProfile.setImageBitmap(BitmapFactory.decodeByteArray(contactModel.getImage(),
-                0, contactModel.getImage().length));
+        holder.imageProfile.setImageBitmap(BitmapFactory.decodeByteArray(contactModel.getImage(),
+               0, contactModel.getImage().length));
         //holder.imageProfile.setImageResource(context.getResources().getIdentifier(contactModel.getImage(position), "drawable", context.getPackageName())); //used for static model; picasso library can be used here.
         holder.cardView.setOnClickListener(view -> {
             Intent intent = new Intent(context, UpdateContactActivity.class);
             context.startActivity(intent);
         });
     }
-
     @Override
     public int getItemCount() {
         return contactModelList.size();
@@ -60,7 +61,7 @@ public class Adaptor extends RecyclerView.Adapter<Adaptor.ContactCardViewHolder>
         private View cardView;
         private CircleImageView imageProfile;
 
-        public ContactCardViewHolder(@NonNull View itemView) {
+        public ContactCardViewHolder(@NonNull View itemView){
             super(itemView);
             txtName = itemView.findViewById(R.id.textViewName);
             txtTitle = itemView.findViewById(R.id.textViewTitle);
@@ -69,6 +70,7 @@ public class Adaptor extends RecyclerView.Adapter<Adaptor.ContactCardViewHolder>
             imageProfile = itemView.findViewById(R.id.circleImageView);
             cardView = itemView.findViewById(R.id.cardView);
         }
+
     }
 }
 

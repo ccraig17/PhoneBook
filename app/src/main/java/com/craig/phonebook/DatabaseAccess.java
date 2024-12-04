@@ -8,6 +8,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.icu.text.CaseMap;
 import android.net.Uri;
+import android.widget.Toast;
+
+import com.craig.phonebook.Activities.ContactListActivity;
+import com.google.android.material.snackbar.Snackbar;
 
 public class DatabaseAccess extends SQLiteOpenHelper {
     private static final String CONTACTS_LIST = "phonebook.db";
@@ -43,8 +47,10 @@ public class DatabaseAccess extends SQLiteOpenHelper {
         valuesAdded.put(EMAIL, email);
         valuesAdded.put(IMAGE, image);
        long result = db.insert(TABLE_NAME, null, valuesAdded);
-        return (result !=-1);
+       db.close();
+        return result != -1;
     }
+    //update using contact id from db NOT NAME; there could be two contacts with the same name. ** FIX!
     public boolean update(String name, String title, String email, String image){
         db = this.getWritableDatabase();
         ContentValues valuesUpdate = new ContentValues();
@@ -52,21 +58,51 @@ public class DatabaseAccess extends SQLiteOpenHelper {
         valuesUpdate.put(NAME, name);
         valuesUpdate.put(TITLE, title);
         valuesUpdate.put(EMAIL, email);
-        valuesUpdate.put(String.valueOf(IMAGE), image);
+        valuesUpdate.put(IMAGE, image);
         long result = db.update(TABLE_NAME, valuesUpdate, sqlUpdate, new String[]{name});
+        db.close();
         return result != -1;
     };
-    public boolean delete(String name){
+    public boolean delete(String contactName){
+//        db = this.getWritableDatabase();
+//        String[] whereArgs = {contactName};
+//        long result = db.delete(DatabaseAccess.TABLE_NAME, DatabaseAccess.NAME + " = ?", whereArgs);
+//        if(result == -1){
+//            return false;
+//        }
+//        return true;
         db = this.getWritableDatabase();
-        String sqlDlete = "SELECT * FROM " + TABLE_NAME + "WHERE " + "NAME" + "=" + "?";
-        long result = db.delete(TABLE_NAME, sqlDlete, new String[]{name});
-        return(result != -1);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + NAME + "= ?", new String[]{contactName});
+        if(cursor.getCount() > 0){
+            long result = db.delete(TABLE_NAME, NAME + " = ?", new String[]{contactName});
+            return result != -1;
+        }else{
+            return false;
+        }
+        
+//        db = this.getWritableDatabase();
+//       String sqlDelete = "SELECT * FROM " + TABLE_NAME + " WHERE " +  NAME + "= ?";
+//       // String sqlDelete = "DELETE * FROM " + TABLE_NAME + " WHERE " +  NAME + "= ?";
+//        long result = db.delete(TABLE_NAME, sqlDelete, new String[]{contactName});
+//        return(result != -1);
+
+//        db = this.getWritableDatabase();
+//        String whereClause =NAME + " = ?";
+//        String[] whereArgs = {contactName};
+//        long result = db.delete(TABLE_NAME, whereClause, whereArgs);
+//        db.close();
+//        return (result !=-1);
+
     };
 
-    public Cursor returnData(){
-        db = this.getWritableDatabase();
-        return db.rawQuery("SELECT * FROM " + TABLE_NAME,  new String[]{NAME+" ASC"});
-        //return db.rawQuery("SELECT * FROM " + TABLE_NAME, null); Option if you DON'T want to sort the data
+    public Cursor readAllData(){
+        db = this.getReadableDatabase();
+        String sql = "SELECT * FROM " + TABLE_NAME + " ORDER BY " + NAME + " ASC ";
+        Cursor cursor = null;
+        if(db != null){
+           cursor = db.rawQuery(sql, null);
+        }
+        return cursor;
     }
     public void open(){
         db = this.getWritableDatabase();

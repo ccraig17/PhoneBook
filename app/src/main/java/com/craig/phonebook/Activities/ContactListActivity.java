@@ -1,11 +1,15 @@
 package com.craig.phonebook.Activities;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.craig.phonebook.Adaptor;
@@ -14,6 +18,8 @@ import com.craig.phonebook.DatabaseAccess;
 import com.craig.phonebook.R;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -22,9 +28,11 @@ public class ContactListActivity extends AppCompatActivity {
     RecyclerView contactListRecyclerView;
     private FloatingActionButton fabAddContact;
     private Adaptor adaptor;
-    private final ArrayList<ContactModel> contactList = new ArrayList<>();
+    private DatabaseAccess databaseAccess = new DatabaseAccess(this);
+    private ArrayList<ContactModel> contactList = new ArrayList<>();
     private ActivityResultLauncher<Intent> activityResultLauncherForAddNewContact;
-    private final DatabaseAccess databaseAccess = new DatabaseAccess(this);
+    private ConstraintLayout main;
+    private ContactModel contactModelToDelete;
 
 
     @Override
@@ -34,21 +42,42 @@ public class ContactListActivity extends AppCompatActivity {
         toolbarContactList = findViewById(R.id.toolbarContactList);
         setSupportActionBar(toolbarContactList);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-
+        databaseAccess.open();
         fabAddContact = findViewById(R.id.fabAddContact);
+        contactListRecyclerView = findViewById(R.id.contactListRecyclerView);
+        main = findViewById(R.id.main);
         registrationForAddContactResult();
 
-        contactListRecyclerView = findViewById(R.id.contactListRecyclerView);
-
-        contactListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         adaptor = new Adaptor(contactList, ContactListActivity.this);
         contactListRecyclerView.setAdapter(adaptor);
+        contactListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         fabAddContact.setOnClickListener(view -> {
             Intent intent = new Intent(this, AddContactActivity.class);
             activityResultLauncherForAddNewContact.launch(intent);
         });
+        showContactList();
+        adaptor = new Adaptor(contactList, this);
+        contactListRecyclerView.setAdapter(adaptor);
+        contactListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                    int position = viewHolder.getAdapterPosition();
+                    contactList.remove(position);
+                    databaseAccess.delete(contactList.get(position).getName());
+                    adaptor.notifyDataSetChanged();
+                    Snackbar.make(main, "Contact Deleted", Snackbar.LENGTH_LONG).show();
+
+            }
+
+        }).attachToRecyclerView(contactListRecyclerView);
     }
 
     public void registrationForAddContactResult() {
@@ -66,12 +95,31 @@ public class ContactListActivity extends AppCompatActivity {
                         byte[] image = data.getByteArrayExtra("image");
                         contactList.add(new ContactModel(name, title, phone, email, image));
                         databaseAccess.insert(name,title,email,image);
-
+                        adaptor.notifyDataSetChanged();
                     //SAVE DATA TO DATABASE HERE  databaseAccess.insert(name, title, phone, email, image);
                         Toast.makeText(this, "Contact Added", Toast.LENGTH_SHORT).show();
                     }
-
                 });
+    }
+
+
+
+    public void showContactList(){
+        Cursor cursor = databaseAccess.readAllData();
+        if(cursor.getCount()==0){
+            Toast.makeText(this, "No Data", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            while(cursor.moveToNext()){
+                String name = cursor.getString(0);
+                String title = cursor.getString(1);
+                String phone = cursor.getString(2);
+                String email = cursor.getString(3);
+                byte[] image = cursor.getBlob(4);
+                contactList.add(new ContactModel(name, title, phone, email, image));
+                adaptor.notifyDataSetChanged();
+            }
+        }
     }
 
 
