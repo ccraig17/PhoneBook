@@ -3,7 +3,10 @@ package com.craig.phonebook;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +15,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.craig.phonebook.Activities.UpdateContactActivity;
 import com.craig.phonebook.Model.ContactModel;
-
 import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 

@@ -56,6 +56,7 @@ public class ContactListActivity extends AppCompatActivity {
             Intent intent = new Intent(this, AddContactActivity.class);
             activityResultLauncherForAddNewContact.launch(intent);
         });
+
         showContactList();
         adaptor = new Adaptor(contactList, this);
         contactListRecyclerView.setAdapter(adaptor);
@@ -66,17 +67,15 @@ public class ContactListActivity extends AppCompatActivity {
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 return false;
             }
-
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                     int position = viewHolder.getAdapterPosition();
-                    contactList.remove(position);
+                    contactList.remove(position) ;
+                   //how to update the recyclerView when a contact is deleted.contactList.remove(position); // Remove the item at the specified positioncontactList.remove(position); // Remove the item at the specified positioncontactList.remove(position); // Remove the item at the specified positioncontactList.remove(position); // Remove the item at the specified position
                     databaseAccess.delete(contactList.get(position).getName());
                     adaptor.notifyDataSetChanged();
                     Snackbar.make(main, "Contact Deleted", Snackbar.LENGTH_LONG).show();
-
             }
-
         }).attachToRecyclerView(contactListRecyclerView);
     }
 
@@ -94,8 +93,8 @@ public class ContactListActivity extends AppCompatActivity {
                         String email = data.getStringExtra("email");
                         byte[] image = data.getByteArrayExtra("image");
                         contactList.add(new ContactModel(name, title, phone, email, image));
-                        databaseAccess.insert(name,title,email,image);
                         adaptor.notifyDataSetChanged();
+                        databaseAccess.insert(name,title,phone,email,image);
                     //SAVE DATA TO DATABASE HERE  databaseAccess.insert(name, title, phone, email, image);
                         Toast.makeText(this, "Contact Added", Toast.LENGTH_SHORT).show();
                     }
@@ -110,7 +109,7 @@ public class ContactListActivity extends AppCompatActivity {
             Toast.makeText(this, "No Data", Toast.LENGTH_SHORT).show();
         }
         else{
-            while(cursor.moveToNext()){
+            while(cursor.moveToNext()) {
                 String name = cursor.getString(0);
                 String title = cursor.getString(1);
                 String phone = cursor.getString(2);
