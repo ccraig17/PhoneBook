@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.craig.phonebook.DatabaseAccess;
 import com.craig.phonebook.Model.ContactModel;
 import com.craig.phonebook.R;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -41,6 +42,7 @@ public class AddContactActivity extends AppCompatActivity {
     private Bitmap selectedImage;
     private Bitmap scaledImage;
     private ActivityResultLauncher<Intent> activityResultLauncherForSelectedImage;
+    private DatabaseAccess databaseAccess;
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
 
@@ -66,7 +68,9 @@ public class AddContactActivity extends AppCompatActivity {
         registrationForSelectedImage();
 
         btnCamera.setOnClickListener(view -> {
-            permission();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                permission();
+            }
             imageViewAddImage.setImageBitmap(selectedImage);
         });
 
@@ -76,17 +80,17 @@ public class AddContactActivity extends AppCompatActivity {
                 return;
             } else {
                 imageViewAddImage.setImageBitmap(selectedImage);
-                String name = editTxtName.getText().toString();
-                String title = editeTxtTitle.getText().toString();
-                String phone = editTxtPhone.getText().toString();
-                String email = editTxtEmail.getText().toString();
+                String name = editTxtName.getText().toString().trim();
+                String title = editeTxtTitle.getText().toString().trim();
+                String phone = editTxtPhone.getText().toString().trim();
+                String email = editTxtEmail.getText().toString().trim();
 
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 scaledImage = makeSmall(selectedImage, 300); //scaled the selected image to be passed to  the ContactList
                 scaledImage.compress(Bitmap.CompressFormat.PNG,50, outputStream);
                 byte[] image = outputStream.toByteArray();
 
-                Intent intent = new Intent();
+                Intent intent = new Intent(this, ContactListActivity.class);
                 intent.putExtra("name", name);
                 intent.putExtra("title", title);
                 intent.putExtra("phone", phone);
@@ -94,16 +98,21 @@ public class AddContactActivity extends AppCompatActivity {
                 intent.putExtra("image", image);
                 setResult(RESULT_OK, intent);
                 finish();
+
             }
         });
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private void permission() {
         String permission;
         if (Build.VERSION.SDK_INT >= 33) {
             permission = Manifest.permission.READ_MEDIA_IMAGES;
-        } else {
+        } else if(Build.VERSION.SDK_INT >= 30){
+            permission = Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED;
+        }
+        else{
             permission = Manifest.permission.READ_EXTERNAL_STORAGE;
         }
         if (ContextCompat.checkSelfPermission(AddContactActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
@@ -131,7 +140,7 @@ public class AddContactActivity extends AppCompatActivity {
                     public void onActivityResult(ActivityResult result) {
                         int resultCode = result.getResultCode();
                         Intent data = result.getData();
-                        if(resultCode == RESULT_OK && data != null && data.getData() != null){
+                        if(resultCode == RESULT_OK && data != null){ // && data.getData() != null
                             isImageSelected = true;
                             try {
                                 selectedImage = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());

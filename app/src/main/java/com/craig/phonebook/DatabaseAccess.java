@@ -1,17 +1,10 @@
 package com.craig.phonebook;
-
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.icu.text.CaseMap;
-import android.net.Uri;
-import android.widget.Toast;
-
-import com.craig.phonebook.Activities.ContactListActivity;
-import com.google.android.material.snackbar.Snackbar;
+import android.util.Log;
 
 public class DatabaseAccess extends SQLiteOpenHelper {
     private static final String CONTACTS_LIST = "phonebook.db";
@@ -42,8 +35,7 @@ public class DatabaseAccess extends SQLiteOpenHelper {
             db.execSQL(sql);
         }
     }
-
-
+    
     public boolean insert(String name, String title, String phone, String email, byte[] image){
         db = this.getWritableDatabase();
         ContentValues valuesAdded = new ContentValues();
@@ -70,17 +62,21 @@ public class DatabaseAccess extends SQLiteOpenHelper {
         db.close();
         return result != -1;
     };
-    public boolean delete(String contactName){
+    //DOES NOT WORK, when Swipe is used
+    public void delete(String contactName){
         db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + NAME + " = ? ", new String[]{contactName});
-        if(cursor.getCount() > 0){
-            long result = db.delete(TABLE_NAME, NAME + " = ? ", new String[]{contactName});
-            return result != -1;
-        }else{
-            return false;
-        }
+//       Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + NAME + " = ? ", new String[]{contactName});
+//       // String sql = "DELETE  * FROM " + TABLE_NAME + " WHERE " + NAME + " = ? ";
+//        if(cursor.getCount() > 0){
+//            long result = db.delete(TABLE_NAME, NAME + " = ? ", new String[]{contactName});
+//            return result != -1;
+//        }else{
+//            return false;
+//        }
+        //db.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + NAME + " = ? ", new String[]{contactName});
+        db.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + NAME + " =\"" + contactName + "\";");
     };
-
+    //works does NOT show Pix
     public Cursor readAllData(){
         db = this.getReadableDatabase();
         String sql = "SELECT * FROM " + TABLE_NAME + " ORDER BY " + NAME + " ASC ";

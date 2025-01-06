@@ -19,7 +19,6 @@ import com.craig.phonebook.R;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -28,8 +27,9 @@ public class ContactListActivity extends AppCompatActivity {
     RecyclerView contactListRecyclerView;
     private FloatingActionButton fabAddContact;
     private Adaptor adaptor;
-    private DatabaseAccess databaseAccess = new DatabaseAccess(this);
-    private ArrayList<ContactModel> contactList = new ArrayList<>();
+    private final DatabaseAccess databaseAccess = new DatabaseAccess(this);
+    private final ArrayList<ContactModel> contactList = new ArrayList<>();
+    private final ArrayList<ContactModel> newContactList = new ArrayList<>();
     private ActivityResultLauncher<Intent> activityResultLauncherForAddNewContact;
     private ConstraintLayout main;
     private ContactModel contactModelToDelete;
@@ -48,19 +48,15 @@ public class ContactListActivity extends AppCompatActivity {
         main = findViewById(R.id.main);
         registrationForAddContactResult();
 
-        adaptor = new Adaptor(contactList, ContactListActivity.this);
-        contactListRecyclerView.setAdapter(adaptor);
-        contactListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         fabAddContact.setOnClickListener(view -> {
             Intent intent = new Intent(this, AddContactActivity.class);
             activityResultLauncherForAddNewContact.launch(intent);
         });
-
-        showContactList();
-        adaptor = new Adaptor(contactList, this);
+        adaptor = new Adaptor(contactList, ContactListActivity.this);
         contactListRecyclerView.setAdapter(adaptor);
         contactListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        showContactList();
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -69,16 +65,21 @@ public class ContactListActivity extends AppCompatActivity {
             }
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                    int position = viewHolder.getAdapterPosition();
-                    contactList.remove(position) ;
-                   //how to update the recyclerView when a contact is deleted.contactList.remove(position); // Remove the item at the specified positioncontactList.remove(position); // Remove the item at the specified positioncontactList.remove(position); // Remove the item at the specified positioncontactList.remove(position); // Remove the item at the specified position
-                    databaseAccess.delete(contactList.get(position).getName());
-                    adaptor.notifyDataSetChanged();
-                    Snackbar.make(main, "Contact Deleted", Snackbar.LENGTH_LONG).show();
+                //ArrayList<ContactModel> newContactList = new ArrayList<>(contactList);
+                ContactModel contactModelToDelete;
+                int position = viewHolder.getAdapterPosition();
+                contactModelToDelete = contactList.get(position);
+                contactList.remove(contactModelToDelete);
+                contactListRecyclerView.setAdapter(adaptor);
+                contactListRecyclerView.setLayoutManager(new LinearLayoutManager(ContactListActivity.this));
+                databaseAccess.delete(contactModelToDelete.getName());
+                Snackbar.make(main, "Contact Deleted", Snackbar.LENGTH_LONG).show();
             }
-        }).attachToRecyclerView(contactListRecyclerView);
-    }
+        }).attachToRecyclerView(contactListRecyclerView);;
 
+
+
+    }
     public void registrationForAddContactResult() {
         activityResultLauncherForAddNewContact = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -93,15 +94,14 @@ public class ContactListActivity extends AppCompatActivity {
                         String email = data.getStringExtra("email");
                         byte[] image = data.getByteArrayExtra("image");
                         contactList.add(new ContactModel(name, title, phone, email, image));
-                        adaptor.notifyDataSetChanged();
+                        adaptor.setDataList(contactList);
+                        contactListRecyclerView.setAdapter(adaptor);
+                        contactListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
                         databaseAccess.insert(name,title,phone,email,image);
-                    //SAVE DATA TO DATABASE HERE  databaseAccess.insert(name, title, phone, email, image);
                         Toast.makeText(this, "Contact Added", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
-
-
 
     public void showContactList(){
         Cursor cursor = databaseAccess.readAllData();
@@ -116,8 +116,9 @@ public class ContactListActivity extends AppCompatActivity {
                 String email = cursor.getString(3);
                 byte[] image = cursor.getBlob(4);
                 contactList.add(new ContactModel(name, title, phone, email, image));
-                adaptor.notifyDataSetChanged();
             }
+            cursor.close();
+
         }
     }
 

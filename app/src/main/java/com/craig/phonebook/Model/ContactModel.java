@@ -1,5 +1,8 @@
 package com.craig.phonebook.Model;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public class ContactModel {
     private String name;
     private String title;
@@ -41,5 +44,23 @@ public class ContactModel {
 
     public byte[] getImage() {
         return image;
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj) return true;
+        if(obj == null || getClass() != obj.getClass()) return false;
+        ContactModel contactModel = (ContactModel) obj;
+        return name.equals(contactModel.name) && title.equals(contactModel.title) && phoneNumber.equals(contactModel.phoneNumber)
+                && email.equals(contactModel.email) && Arrays.equals(image, contactModel.image);
+    }
+    @Override
+    public int hashCode() {
+//        int result = name.hashCode();
+//        result = 31 * result + title.hashCode();
+//        result = 31 * result + phoneNumber.hashCode();
+//        result = 31 * result + email.hashCode();
+//        result = 31 * result + Arrays.hashCode(image);
+//        return result;
+        return Objects.hash(name, title, phoneNumber, email, Arrays.hashCode(image));
     }
 }
