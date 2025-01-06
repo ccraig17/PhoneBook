@@ -1,37 +1,44 @@
 package com.craig.phonebook;
 
 
-import static androidx.core.content.ContextCompat.startActivity;
-
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
-
+import com.craig.phonebook.Activities.UpdateContactActivity;
+import com.craig.phonebook.Model.ContactModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-
+import java.util.Arrays;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class Adaptor extends RecyclerView.Adapter<Adaptor.ContactCardViewHolder> {
-    private ArrayList<ContactModel> contactModelList;
+    private final ArrayList<ContactModel> contactModelList;
     private final Context context;
 
     public Adaptor(ArrayList<ContactModel> contactModelList, Context context) {
         this.contactModelList = contactModelList;
         this.context = context;
+        
     }
-//    public void setContactModelsList(ArrayList<ContactModel> contactModelList) {
-//        this.contactModelList = contactModelList;
-//    }
 
+    public void setDataList(ArrayList<ContactModel> newContactModelList){
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new MyDiffUtilCallback(contactModelList, newContactModelList));
+        contactModelList.clear();
+        contactModelList.addAll(newContactModelList);
+        diffResult.dispatchUpdatesTo(this);
+    }
     @NonNull
     @Override
     public ContactCardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -46,15 +53,19 @@ public class Adaptor extends RecyclerView.Adapter<Adaptor.ContactCardViewHolder>
         holder.txtTitle.setText(contactModel.getTitle());
         holder.txtPhoneNumber.setText(contactModel.getPhoneNumber());
         holder.txtEmail.setText(contactModel.getEmail());
-        //holder.imageProfile.setImageResource(context.getResources().getIdentifier(contactModel.getImage(position), "drawable", context.getPackageName())); //used for static model
-        holder.imageProfile.setImageURI(contactModel.getImage());
-        Picasso.get().load(contactModel.getImage()).into(holder.imageProfile);
-        holder.cardView.setOnClickListener(view -> {
-            Intent intent = new Intent(context, UpdateContactActivity.class);
-            context.startActivity(intent);
-        });
-    }
+        if(contactModel.getImage() != null) {
+            holder.imageProfile.setImageBitmap(BitmapFactory.decodeByteArray(contactModel.getImage(),
+                    0, contactModel.getImage().length));
+        }else{
+            holder.imageProfile.setImageResource(R.drawable.baseline_person_add_24);
+        }
+        //holder.imageProfile.setImageResource(context.getResources().getIdentifier(contactModel.getImage(position), "drawable", context.getPackageName())); //used for static model; picasso library can be used here.
+//        holder.cardView.setOnClickListener(view -> {
+//            Intent intent = new Intent(context, UpdateContactActivity.class);
+//            context.startActivity(intent);
+//        });
 
+    }
     @Override
     public int getItemCount() {
         return contactModelList.size();
@@ -76,6 +87,13 @@ public class Adaptor extends RecyclerView.Adapter<Adaptor.ContactCardViewHolder>
             txtEmail = itemView.findViewById(R.id.textViewEmail);
             imageProfile = itemView.findViewById(R.id.circleImageView);
             cardView = itemView.findViewById(R.id.cardView);
+        }
+
+        public void bind(ContactModel contactModel) {
+            txtName.setText(contactModel.getName());
+            txtTitle.setText(contactModel.getTitle());
+            txtPhoneNumber.setText(contactModel.getPhoneNumber());
+            txtEmail.setText(contactModel.getEmail());
         }
     }
 }
