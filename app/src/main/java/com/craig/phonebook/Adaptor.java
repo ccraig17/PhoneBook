@@ -1,44 +1,30 @@
 package com.craig.phonebook;
-
-
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DiffUtil;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
-import com.craig.phonebook.Activities.UpdateContactActivity;
-import com.craig.phonebook.Model.ContactModel;
-import com.squareup.picasso.Picasso;
-
+import com.craig.phonebook.RoomDatabase.Contact;
 import java.util.ArrayList;
-import java.util.Arrays;
-
+import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class Adaptor extends RecyclerView.Adapter<Adaptor.ContactCardViewHolder> {
-    private final ArrayList<ContactModel> contactModelList;
-    private final Context context;
+    private List<Contact> contactList = new ArrayList<>(); //MUST initial ArrayList in order to get the items for getCount() or crash
+    private OnImageClickListener listener;
 
-    public Adaptor(ArrayList<ContactModel> contactModelList, Context context) {
-        this.contactModelList = contactModelList;
-        this.context = context;
-        
+    public void setContactList(List<Contact> contactList) {
+        this.contactList = contactList;
+        notifyDataSetChanged(); //updates the recycler view
     }
 
-    public void setDataList(ArrayList<ContactModel> newContactModelList){
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new MyDiffUtilCallback(contactModelList, newContactModelList));
-        contactModelList.clear();
-        contactModelList.addAll(newContactModelList);
-        diffResult.dispatchUpdatesTo(this);
+    public void setListener(OnImageClickListener listener) {
+        this.listener = listener;
     }
+
     @NonNull
     @Override
     public ContactCardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -48,36 +34,36 @@ public class Adaptor extends RecyclerView.Adapter<Adaptor.ContactCardViewHolder>
 
     @Override
     public void onBindViewHolder(@NonNull ContactCardViewHolder holder, int position) {
-        ContactModel contactModel = contactModelList.get(position);
-        holder.txtName.setText(contactModel.getName());
-        holder.txtTitle.setText(contactModel.getTitle());
-        holder.txtPhoneNumber.setText(contactModel.getPhoneNumber());
-        holder.txtEmail.setText(contactModel.getEmail());
-        if(contactModel.getImage() != null) {
-            holder.imageProfile.setImageBitmap(BitmapFactory.decodeByteArray(contactModel.getImage(),
-                    0, contactModel.getImage().length));
-        }else{
-            holder.imageProfile.setImageResource(R.drawable.baseline_person_add_24);
-        }
-        //holder.imageProfile.setImageResource(context.getResources().getIdentifier(contactModel.getImage(position), "drawable", context.getPackageName())); //used for static model; picasso library can be used here.
-//        holder.cardView.setOnClickListener(view -> {
-//            Intent intent = new Intent(context, UpdateContactActivity.class);
-//            context.startActivity(intent);
+       Contact contact = contactList.get(position);
+        holder.txtName.setText(contact.getName());
+        holder.txtTitle.setText(contact.getTitle());
+        holder.txtPhoneNumber.setText(contact.getPhoneNumber());
+        holder.txtEmail.setText(contact.getEmail());
+        holder.imageProfile.setImageBitmap(BitmapFactory.decodeByteArray(contact.getImage(),
+                    0, contact.getImage().length));
+//        holder.cardView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//               // int position = getAdapterPosition();
+//                int position = holder.getAdapterPosition();
+//                if(listener != null && position != RecyclerView.NO_POSITION){
+//                    listener.onImageClick(contactList.get(position));
+//                }
+//            }
 //        });
-
     }
     @Override
     public int getItemCount() {
-        return contactModelList.size();
+        return contactList.size();
     }
 
-    public static class ContactCardViewHolder extends RecyclerView.ViewHolder {
+    public class ContactCardViewHolder extends RecyclerView.ViewHolder {
         private TextView txtName;
         private TextView txtTitle;
         private TextView txtPhoneNumber;
         private TextView txtEmail;
-        private View cardView;
         private CircleImageView imageProfile;
+        private CardView cardView;
 
         public ContactCardViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -87,14 +73,27 @@ public class Adaptor extends RecyclerView.Adapter<Adaptor.ContactCardViewHolder>
             txtEmail = itemView.findViewById(R.id.textViewEmail);
             imageProfile = itemView.findViewById(R.id.circleImageView);
             cardView = itemView.findViewById(R.id.cardView);
-        }
 
-        public void bind(ContactModel contactModel) {
-            txtName.setText(contactModel.getName());
-            txtTitle.setText(contactModel.getTitle());
-            txtPhoneNumber.setText(contactModel.getPhoneNumber());
-            txtEmail.setText(contactModel.getEmail());
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if(listener != null && position != RecyclerView.NO_POSITION){
+                        listener.onImageClick(contactList.get(position));
+                    }
+                }
+            });
         }
+    }
+    /*
+        used to get the contact at its position, returning a contact object needed for the delete() method
+        allows for access of a contact object in the delete() method via its position in the recycler view.
+    */
+    public Contact getPosition(int position) {
+        return contactList.get(position);
+    }
+    public interface OnImageClickListener{
+        void onImageClick(Contact contact);
     }
 }
 

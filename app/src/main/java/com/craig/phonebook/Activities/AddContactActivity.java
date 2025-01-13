@@ -1,5 +1,4 @@
 package com.craig.phonebook.Activities;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,7 +9,6 @@ import android.provider.MediaStore;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -20,13 +18,10 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
-import com.craig.phonebook.DatabaseAccess;
-import com.craig.phonebook.Model.ContactModel;
+import com.craig.phonebook.RoomDatabase.Contact;
 import com.craig.phonebook.R;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Objects;
@@ -42,7 +37,6 @@ public class AddContactActivity extends AppCompatActivity {
     private Bitmap selectedImage;
     private Bitmap scaledImage;
     private ActivityResultLauncher<Intent> activityResultLauncherForSelectedImage;
-    private DatabaseAccess databaseAccess;
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
 
@@ -77,9 +71,8 @@ public class AddContactActivity extends AppCompatActivity {
         btnSaveContact.setOnClickListener(view -> {
             if (selectedImage == null) {//if used presses the save btn w/o selecting and image => app crashes
                 Toast.makeText(this, "Please select an image", Toast.LENGTH_SHORT).show();
-                return;
             } else {
-                imageViewAddImage.setImageBitmap(selectedImage);
+               // imageViewAddImage.setImageBitmap(selectedImage); cause of crash/pix not attached to recycler view
                 String name = editTxtName.getText().toString().trim();
                 String title = editeTxtTitle.getText().toString().trim();
                 String phone = editTxtPhone.getText().toString().trim();
@@ -140,7 +133,7 @@ public class AddContactActivity extends AppCompatActivity {
                     public void onActivityResult(ActivityResult result) {
                         int resultCode = result.getResultCode();
                         Intent data = result.getData();
-                        if(resultCode == RESULT_OK && data != null){ // && data.getData() != null
+                        if(resultCode == RESULT_OK && data != null){
                             isImageSelected = true;
                             try {
                                 selectedImage = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
@@ -158,9 +151,9 @@ public class AddContactActivity extends AppCompatActivity {
         );
     }
 
-    public ContactModel addContact(String name, String title, String phone, String email) {
+    public Contact addContact(String name, String title, String phone, String email, byte[] image) {
         if (!name.isEmpty() && !title.isEmpty() && !phone.isEmpty() && !email.isEmpty()) {
-            return new ContactModel(name, title, phone, email);
+            return new Contact(name, title, phone, email, image);
         } else {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
             return null;

@@ -42,4 +42,16 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation (libs.circleimageview)
     implementation (libs.picasso)
+
+    val room_version = "2.6.1"
+    implementation(libs.room.runtime)
+    annotationProcessor(libs.room.compiler)
+
+    val lifecycle_version = "2.8.7"
+    // ViewModel
+    implementation(libs.lifecycle.viewmodel)
+    // LiveData
+    implementation(libs.lifecycle.livedata)
+    // annotation processor
+    implementation(libs.lifecycle.common.java8)
 }
