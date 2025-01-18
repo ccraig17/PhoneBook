@@ -30,7 +30,7 @@ import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UpdateContactActivity extends AppCompatActivity {
-    MaterialToolbar toolbarAddContact;
+    MaterialToolbar toolbarUpdateContact;
     private EditText editTxtUpdateName, editeTxtUpdateTitle, editTxtUpdatePhone, editTxtUpdateEmail;
     private int id;
     private String name, title, phone, email;
@@ -39,7 +39,6 @@ public class UpdateContactActivity extends AppCompatActivity {
     CircleImageView imageViewUpdateImage;
     private FloatingActionButton btnUpdateImage;
     boolean isImageSelected = false;
-    private ActivityResultLauncher<Intent> activityResultLauncherForUpdateContact;
     private ActivityResultLauncher<Intent> activityResultLauncherForSelectedImage;
     private Bitmap selectedImage;
     private Bitmap scaledImage;
@@ -49,22 +48,22 @@ public class UpdateContactActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_contact);
-        toolbarAddContact = findViewById(R.id.toolbarAddContact);
-        toolbarAddContact.setNavigationOnClickListener(view -> {
-            if (Objects.equals(toolbarAddContact.getTitle(), "Add Contact")) {
+        setContentView(R.layout.activity_update_contact);
+        toolbarUpdateContact = findViewById(R.id.toolbarUpdateContact);
+        toolbarUpdateContact.setNavigationOnClickListener(view -> {
+            if (Objects.equals(toolbarUpdateContact.getTitle(), "Add Contact")) {
                 startActivity(new Intent(this, ContactListActivity.class));
                 finish();
             }
         });
-        editTxtUpdateName = findViewById(R.id.editTxtName);
-        editeTxtUpdateTitle = findViewById(R.id.editTxtTitle);
-        editTxtUpdatePhone = findViewById(R.id.editTxtPhone);
-        editTxtUpdateEmail = findViewById(R.id.editTxtEmail);
-        imageViewUpdateImage = findViewById(R.id.imageViewAddImage);
-        btnUpdateImage = findViewById(R.id.fab_Camera);
-        btnUpdateContact = findViewById(R.id.buttonSaveContact);
-        registerForActivity();
+        editTxtUpdateName = findViewById(R.id.editTxtUpdateName);
+        editeTxtUpdateTitle = findViewById(R.id.editTxtTUpdateTitle);
+        editTxtUpdatePhone = findViewById(R.id.editTxtUpdatePhone);
+        editTxtUpdateEmail = findViewById(R.id.editTxtUpdateEmail);
+        imageViewUpdateImage = findViewById(R.id.imageViewUpdateImage);
+        btnUpdateImage = findViewById(R.id.btnCamera);
+        btnUpdateContact = findViewById(R.id.buttonUpdateContact); //change to R.id.buttonUpdateContact
+        //registerForActivity();
         registrationForSelectedImage();
 
         //receive the data from the ContactListActivity;
@@ -100,7 +99,6 @@ public class UpdateContactActivity extends AppCompatActivity {
             Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
             return;
         }else{
-
             String updateName = editTxtUpdateName.getText().toString().trim();
             String updateTitle = editeTxtUpdateTitle.getText().toString().trim();
             String updatePhone = editTxtUpdatePhone.getText().toString().trim();
@@ -129,14 +127,14 @@ public class UpdateContactActivity extends AppCompatActivity {
         }
 
     }
-    private void registerForActivity() {
-        activityResultLauncherForUpdateContact = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
-            @Override
-            public void onActivityResult(ActivityResult result) {
-
-            }
-        });
-    }
+//    private void registerForActivity() {
+//        activityResultLauncherForUpdateContact = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+//            @Override
+//            public void onActivityResult(ActivityResult result) {
+//
+//            }
+//        });
+//    }
 
 
     @RequiresApi(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
