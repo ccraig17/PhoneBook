@@ -44,7 +44,6 @@ public class UpdateContactActivity extends AppCompatActivity {
     private Bitmap scaledImage;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,7 +107,8 @@ public class UpdateContactActivity extends AppCompatActivity {
             intent.putExtra("id", id);
             intent.putExtra("updateName", updateName);
             intent.putExtra("updateTitle", updateTitle);
-            intent.putExtra("updatePhone ", updatePhone );
+           // intent.putExtra("updatePhone ", updatePhone );
+            intent.putExtra("updatePhone", updatePhone); //corrected 020325.
             intent.putExtra("updateEmail", updateEmail);
 
             if (selectedImage == null) {

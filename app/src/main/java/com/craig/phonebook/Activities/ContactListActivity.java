@@ -35,6 +35,7 @@ public class ContactListActivity extends AppCompatActivity {
     private ConstraintLayout main;
     private ContactViewModel contactViewModel;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,6 +122,7 @@ public class ContactListActivity extends AppCompatActivity {
                     contact.setId(id);
                     contactViewModel.update(contact);
                     Toast.makeText(ContactListActivity.this, "Contact Updated", Toast.LENGTH_SHORT).show();
+
                 }
             }
         });
